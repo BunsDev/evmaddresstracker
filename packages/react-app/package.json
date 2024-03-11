@@ -94,7 +94,6 @@
   "scripts": {
     "build": "npx gulp css && react-scripts --openssl-legacy-provider  build",
     "eject": "react-scripts eject",
-    "prestart": "node ./scripts/create_contracts.js",
     "start": "react-scripts --openssl-legacy-provider start",
     "test": "react-scripts  --openssl-legacy-provider test",
     "lint": "eslint --config ./.eslintrc.js --ignore-path ./.eslintignore ./src/**/*",

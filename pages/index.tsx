@@ -8,18 +8,21 @@ import { networkConfig } from '../components/networkConfig'
 import styles from '../styles/Home.module.css';
 
 import { useAccount, useBalance } from 'wagmi';
-import { isAddress } from 'viem';
+import { Address, isAddress } from 'viem';
 
 const Home: NextPage = () => {
 
   const [theaddress, setTheAddress] = useState('');
   const [addresses, setAddresses] = useState([] as string[]);
 
-  const { address } = useAccount(networkConfig);
+  const { address } = useAccount();
 
   //create a function to get the balance of an address
   const getAddressBalance = async (address: string) => {
-    const balance = useBalance(networkConfig, address);
+    if (address) {
+      return '0';
+    }
+    const balance = useBalance({address:address as Address});
     return balance;
   };
 
@@ -45,11 +48,14 @@ const Home: NextPage = () => {
     if (theaddress.trim() !== '') {
       setTheAddress('');
     }
-
+    if(!address){
+      alert('Please connect to a wallet');
+      return;
+    }
     // Add Address
     if (localStorage?.getItem('evmAT')) {
       // get string array from local storage with key 'evmAT'
-      const oldPayload = JSON.parse(localStorage.getItem('evmAT') as string);;
+      const oldPayload = JSON.parse(localStorage.getItem('evmAT') as string);
       console.log('view old payload ', oldPayload[address], addresses);
       oldPayload[address] = [...oldPayload[address], tempAddress];
       localStorage.setItem('evmAT', JSON.stringify(oldPayload));
@@ -67,6 +73,10 @@ const Home: NextPage = () => {
 
   //remove address from address list
   const handleDelete = (index: number) => {
+    if(!address){
+      alert('Please connect to a wallet');
+      return;
+    }
     const newAddresses = addresses.filter((_, i) => i !== index);
     setAddresses(newAddresses);
     const result: any = JSON.parse(localStorage.getItem('evmAT') ?? '');
@@ -114,7 +124,7 @@ const Home: NextPage = () => {
         {addresses.map((address, index) => (
           <li key={index}>
             {address}
-            <span class="isValid">
+            <span className="isValid">
             {isAddress(address) ? (
               <span className="valid-address">Valid</span>
             ) : (

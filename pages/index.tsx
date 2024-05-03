@@ -10,10 +10,18 @@ import styles from '../styles/Home.module.css';
 import { useAccount, useBalance } from 'wagmi';
 import { Address, isAddress } from 'viem';
 
+// Define types for your data
+interface Data{
+  address: Address;
+  ens: string;
+  balance: number;
+}
+
 const Home: NextPage = () => {
 
   const [theaddress, setTheAddress] = useState('');
   const [addresses, setAddresses] = useState([] as string[]);
+  const [data, setData] = useState([] as Data[]);
 
   const { address } = useAccount();
 
@@ -32,6 +40,26 @@ const Home: NextPage = () => {
       if (result && address) {
           const filtered = result[address].filter((add: string) => add !== '');
           setAddresses(filtered);
+          
+          const fetchData = async () => {
+            const response = await fetch('/api/data');
+            const data = await response.json();
+            setData(data);
+          };
+          // Fetch data from the API route
+          fetch('/api/data',{
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ addresses: filtered }),
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log('response', data)
+            setData(data as unknown as Data[])
+          })
+          .catch(error => console.error('Error fetching data:', error));
       }
       console.log('result', result, address);
       console.log('addresses', addresses);
@@ -121,17 +149,22 @@ const Home: NextPage = () => {
         */}
         
         <ul>
-        {addresses.map((address, index) => (
+        {data && data.map((data, index) => (
           <li key={index}>
-            {address}
+            Address: {data.address}
+            <br/>
+            Balance: {data.balance}
+            <br/>
+            Ens: {data.ens}
+            <br/>
             <span className="isValid">
-            {isAddress(address) ? (
+            {isAddress(data.address) ? (
               <span className="valid-address">Valid</span>
             ) : (
               <span className="invalid-address">Invalid</span>
             )}
             </span>
-            
+            <br/>
             <button onClick={() => handleDelete(index)}>Delete</button>
             </li>
         ))}

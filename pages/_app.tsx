@@ -4,6 +4,7 @@ import type { AppProps } from 'next/app';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider, useAccount } from 'wagmi';
+import { createConfig } from 'wagmi';
 
 import {
   arbitrum,
@@ -17,7 +18,7 @@ import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 
 const config = getDefaultConfig({
   appName: 'RainbowKit App',
-  projectId: 'YOUR_PROJECT_ID',
+  projectId: 'ed3b6d48026bbf2c220b7878845a4992',
   chains: [
     mainnet,
     polygon,
